@@ -1,0 +1,50 @@
+.sidebar {
+  width: 250px;
+  background-color: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+}
+
+.logo {
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary);
+  border-bottom: 1px solid var(--border);
+  letter-spacing: -0.5px;
+}
+
+.nav {
+  flex: 1;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+.navLink {
+  padding: 0.75rem 1.5rem;
+  color: var(--foreground);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.navLink:hover {
+  background-color: var(--background);
+  color: var(--primary-hover);
+}
+
+.navLinkActive {
+  background-color: var(--primary-light);
+  color: var(--primary-hover);
+  border-left-color: var(--primary);
+}

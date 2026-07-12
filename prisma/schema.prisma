@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String       @unique
+  password     String
+  role         Role         @default(EMPLOYEE)
+  departmentId String?      @db.ObjectId
+  department   Department?  @relation(fields: [departmentId], references: [id])
+  allocations  Allocation[]
+  bookings     Booking[]
+  maintenanceRequests MaintenanceRequest[]
+  activityLogs ActivityLog[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  HEAD
+  EMPLOYEE
+}
+
+model Department {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  name         String       @unique
+  headId       String?      @db.ObjectId
+  parentId     String?      @db.ObjectId
+  status       Status       @default(ACTIVE)
+  users        User[]
+  allocations  Allocation[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model AssetCategory {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  name         String       @unique
+  customFields Json?
+  assets       Asset[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Asset {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  tag             String       @unique
+  name            String
+  categoryId      String       @db.ObjectId
+  category        AssetCategory @relation(fields: [categoryId], references: [id])
+  serial          String?
+  acquisitionDate DateTime?
+  condition       String?
+  location        String?
+  isBookable      Boolean      @default(false)
+  status          AssetStatus  @default(AVAILABLE)
+  allocations     Allocation[]
+  bookings        Booking[]
+  maintenanceRequests MaintenanceRequest[]
+  auditItems      AuditItem[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+enum AssetStatus {
+  AVAILABLE
+  ALLOCATED
+  RESERVED
+  MAINTENANCE
+  LOST
+  RETIRED
+  DISPOSED
+}
+
+model Allocation {
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
+  assetId            String       @db.ObjectId
+  asset              Asset        @relation(fields: [assetId], references: [id])
+  userId             String?      @db.ObjectId
+  user               User?        @relation(fields: [userId], references: [id])
+  departmentId       String?      @db.ObjectId
+  department         Department?  @relation(fields: [departmentId], references: [id])
+  expectedReturnDate DateTime?
+  actualReturnDate   DateTime?
+  status             AllocationStatus @default(ACTIVE)
+  notes              String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+enum AllocationStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+}
+
+model Booking {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  assetId      String       @db.ObjectId
+  asset        Asset        @relation(fields: [assetId], references: [id])
+  userId       String       @db.ObjectId
+  user         User         @relation(fields: [userId], references: [id])
+  startTime    DateTime
+  endTime      DateTime
+  status       BookingStatus @default(UPCOMING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum BookingStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model MaintenanceRequest {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  assetId      String       @db.ObjectId
+  asset        Asset        @relation(fields: [assetId], references: [id])
+  reporterId   String       @db.ObjectId
+  reporter     User         @relation(fields: [reporterId], references: [id])
+  issue        String
+  priority     Priority     @default(LOW)
+  status       MaintenanceStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MaintenanceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  IN_PROGRESS
+  RESOLVED
+}
+
+model Audit {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  scope        String
+  startDate    DateTime
+  endDate      DateTime
+  status       AuditStatus  @default(OPEN)
+  items        AuditItem[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum AuditStatus {
+  OPEN
+  CLOSED
+}
+
+model AuditItem {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  auditId      String       @db.ObjectId
+  audit        Audit        @relation(fields: [auditId], references: [id])
+  assetId      String       @db.ObjectId
+  asset        Asset        @relation(fields: [assetId], references: [id])
+  status       AuditItemStatus @default(VERIFIED)
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum AuditItemStatus {
+  VERIFIED
+  MISSING
+  DAMAGED
+}
+
+model ActivityLog {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String       @db.ObjectId
+  user         User         @relation(fields: [userId], references: [id])
+  action       String
+  details      String?
+  timestamp    DateTime     @default(now())
+}
