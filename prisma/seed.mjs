@@ -13,7 +13,7 @@ async function main() {
     create: { name: 'Engineering', status: 'ACTIVE' },
   });
 
-  const facDept = await prisma.department.upsert({
+  await prisma.department.upsert({
     where: { name: 'Facilities' },
     update: {},
     create: { name: 'Facilities', status: 'ACTIVE' },
@@ -35,7 +35,7 @@ async function main() {
   // 3. Create Users
   const password = await bcrypt.hash('password123', 10);
 
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@assetflow.com' },
     update: {},
     create: {
@@ -47,7 +47,7 @@ async function main() {
     },
   });
 
-  const manager = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'manager@assetflow.com' },
     update: {},
     create: {
@@ -59,7 +59,7 @@ async function main() {
     },
   });
 
-  const head = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'head@assetflow.com' },
     update: {},
     create: {
@@ -72,7 +72,7 @@ async function main() {
     },
   });
 
-  const employee = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'employee@assetflow.com' },
     update: {},
     create: {
@@ -92,6 +92,7 @@ async function main() {
     create: {
       tag: 'AF-0001',
       serial: 'SN-0001',
+      qrCode: 'QR-0001',
       name: 'MacBook Pro M2',
       categoryId: electronicsCategory.id,
       status: 'AVAILABLE',
@@ -105,6 +106,7 @@ async function main() {
     create: {
       tag: 'AF-0002',
       serial: 'SN-0002',
+      qrCode: 'QR-0002',
       name: 'Office Chair',
       categoryId: furnitureCategory.id,
       status: 'AVAILABLE',

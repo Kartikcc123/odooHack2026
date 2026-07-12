@@ -1,44 +1,35 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
 
-export async function GET(request) {
-  try {
-    const session = await getSession();
-    if (!session?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+import { successResponse, paginationResponse } from '@/utils/response';
+import { validateRequest, withErrorHandler } from '@/utils/validator';
+import { createCategorySchema } from '@/validators/category.validator';
+import { CategoryService } from '@/services/category.service';
+import { requirePermission } from '@/middleware/auth';
+import { PERMISSIONS } from '@/constants/permissions';
+import { MESSAGES } from '@/constants/messages';
+import { RESPONSE_CODES } from '@/constants/responseCodes';
 
-    const categories = await prisma.assetCategory.findMany({
-      orderBy: { name: 'asc' }
-    });
+const service = new CategoryService();
 
-    return NextResponse.json(categories);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const GET = withErrorHandler(async (request) => {
+  const { searchParams } = new URL(request.url);
+  const query = {
+    page: searchParams.get('page'),
+    limit: searchParams.get('limit'),
+    search: searchParams.get('search')
+  };
 
-export async function POST(request) {
-  try {
-    const session = await getSession();
-    if (!session?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const { categories, total } = await service.getCategories(query);
+  
+  return paginationResponse(categories, total, parseInt(query.page) || 1, parseInt(query.limit) || 10);
+});
 
-    const { name } = await request.json();
-    if (!name) {
-      return NextResponse.json({ error: 'Category name is required' }, { status: 400 });
-    }
+export const POST = withErrorHandler(async (request) => {
+  await requirePermission(PERMISSIONS.CREATE_ASSET); // Usually admins/asset managers can manage categories
 
-    const category = await prisma.assetCategory.create({
-      data: { name }
-    });
-
-    return NextResponse.json(category, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+  const body = await request.json();
+  const validData = await validateRequest(createCategorySchema, body);
+  
+  const category = await service.createCategory(validData);
+  
+  return successResponse(category, MESSAGES.CREATED, RESPONSE_CODES.CREATED);
+});

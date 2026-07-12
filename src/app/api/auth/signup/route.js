@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { encrypt } from '@/lib/auth';
+import { encrypt } from '@/utils/auth';
 import { cookies } from 'next/headers';
 
 export async function POST(request) {
