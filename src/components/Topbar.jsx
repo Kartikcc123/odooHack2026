@@ -3,7 +3,6 @@
 import styles from './Topbar.module.css';
 
 export default function Topbar() {
-  // In a real app, this would be fetched from the session context (e.g. NextAuth or custom JWT)
   const user = {
     name: 'Priya Shah',
     role: 'Admin',
