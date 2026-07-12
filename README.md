@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AssetFlow (OdooHack2026)
 
-## Getting Started
+Welcome to **AssetFlow**, an Enterprise Asset Management (EAM) system designed to track, manage, and allocate company assets, resources, and maintenance requests efficiently.
 
-First, run the development server:
+## 🚀 Tech Stack
+
+This project is a full-stack web application built using modern web technologies:
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **Language**: TypeScript & JavaScript
+- **Database**: MongoDB (managed via [Prisma ORM](https://www.prisma.io/))
+- **Authentication**: [Clerk](https://clerk.com/) (Role-based access control)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: Lucide React
+
+## ✨ Core Features
+
+### 🏢 Organization & User Management
+- Hierarchical department structuring.
+- Role-based access control with primary roles: `ADMIN`, `ASSET_MANAGER`, `DEPARTMENT_HEAD`, and `EMPLOYEE`.
+
+### 💻 Asset Inventory
+- Lifecycle management of assets including categorisation, conditions (New, Good, Fair), and tracking statuses (Available, Allocated, Maintenance, Disposed).
+- Support for Asset Tags, Serial Numbers, and QR Codes.
+- Detailed audit trails (`AssetHistory` and `ActivityLog`).
+
+### 🔄 Allocations & Transfers
+- Assign assets (like laptops or chairs) to specific employees with expected return dates.
+- Request/approval workflow for transferring assets between employees.
+
+### 📅 Resource Bookings
+- Booking system for shared organizational resources such as Meeting Rooms, Projectors, and Vehicles.
+
+### 🛠️ Maintenance & Audits
+- Employees can report maintenance issues, and technicians can resolve them with tracking.
+- Dedicated Audit Cycles to periodically verify asset presence and condition.
+
+## 🏗️ Project Architecture
+
+The application follows a structured layered architecture:
+- **Frontend (`src/app`)**: UI components and pages using the Next.js App Router.
+- **API Layer (`src/app/api`)**: Backend endpoints handling RESTful HTTP requests.
+- **Service Layer (`src/services`)**: Core business logic and validation rules.
+- **Repository Layer (`src/repositories`)**: Abstracts database operations and Prisma queries.
+- **Data Access API (`src/lib/api.ts`)**: The frontend's dedicated API client fetching data from the backend routes.
+
+## 🛠️ Getting Started
+
+First, ensure your environment variables are configured in `.env` (including MongoDB and Clerk keys). Then, install dependencies:
+
+```bash
+npm install
+```
+
+Generate the Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔧 Development Notes
+- The Next.js `middleware.js` convention has been updated to `proxy.ts`.
+- In `development` mode, the `requireAuth` middleware automatically provides a mock admin session so you can bypass the login requirements to quickly test the application and view backend data.
