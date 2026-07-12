@@ -2,11 +2,7 @@ import Sidebar from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
 import styles from './layout.module.css';
 
-export default function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AppLayout({ children }) {
   return (
     <div className={styles.appContainer}>
       <Sidebar />
