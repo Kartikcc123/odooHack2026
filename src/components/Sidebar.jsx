@@ -39,7 +39,7 @@ export default function Sidebar() {
 
   return (
     <aside className={styles.sidebar}>
-      <Link href="/dashboard" className={styles.brand}>
+      <Link href="/" className={styles.brand}>
         <span className={styles.brandMark}>AF</span>
         <span className="display font-semibold">AssetFlow</span>
       </Link>
